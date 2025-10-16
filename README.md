@@ -18,32 +18,65 @@ Arduino library for evaluation of larger logic conditions.
 
 **Experimental**
 
-This library is to evaluate larger or more complex logic conditions in a nice way.
+This library is to evaluate larger or more complex logic conditions in a simple way.
+
+The idea is as follows, if you have a slightly complex logic, you set a truth table 
+in the logic object and evaluate the N boolean expressions against it. 
+
+IN the initial release N is 2, 3, 4 or 5, this makes the truth table an uint32_t to hold
+all 32 possible outcomes.
+
+A truth table is represented as a number, an example explains the best.
+
+Suppose we have 3 boolean expressions a, b and c. Furthermore we have a truth function
+**eval(a,b,c)** which returns true if exact two out of three parameters are true.
+
+|  NR  |  a  |  b  |  c  | eval(a,b,c) | neval(a,b,c) |
+|:----:|:---:|:---:|:---:|:-----------:|:------------:|
+|   0  |  0  |  0  |  0  |       0     |        0     |
+|   1  |  0  |  0  |  1  |       0     |        0     |
+|   2  |  0  |  1  |  0  |       0     |        0     |
+|   3  |  0  |  1  |  1  |       1     |        3     |
+|   4  |  1  |  0  |  0  |       0     |        0     |
+|   5  |  1  |  0  |  1  |       1     |        5     |
+|   6  |  1  |  1  |  0  |       1     |        6     |
+|   7  |  1  |  1  |  1  |       0     |        0     |
+
+The value of the truth-table becomes the bits of the **eval(a,b,c)** function column, from top to bottom.
+In the above case this value  == 0b00010110 == 0x16, so one calls **LOGIC.setTable(0b00010110)**
+or the HEX equivalent **LOGIC.setTable(0x16)** to set the truth table.
+
+- Calls to **eval(a,b,c)** will return **true** in case 3, 5 and 6, **false** otherwise.
+- Calls to **neval(a,b,c)** will return 3,5,6 in case 3, 5 and 6, and 0 otherwise.
 
 
 ### Related
 
 - https://github.com/RobTillaart/logic
 
-
 ### Tested
 
-Test on Arduino UNO R3
+Tested examples on Arduino UNO R3
 
 
 ### Performance
 
+See - logic_performance.ino
 
-|  function  |  time (us)  |  Notes  |
-|:----------:|:-----------:|:--------|
-|    2 bit   |             |  default 
-|    3 bit   |             |
-|    4 bit   |             |
-|    5 bit   |             |
-|    2 bit   |             |
+eval(n) => n parameters.
+The timing does not include the evaluation of a, b et c themselves.
 
-
-TODO: run performance sketch on hardware.
+|  function  |  AVR (us)  |  Notes  |
+|:----------:|:----------:|:--------|
+|  setTable  |       4    |  
+|  eval(2)   |       8    |  
+|  eval(3)   |       8    |
+|  eval(4)   |      12    |
+|  eval(5)   |      24    |
+|  neval(2)  |       8    | 
+|  neval(3)  |       4    |
+|  neval(4)  |       4    |
+|  neval(5)  |       4    |
 
 
 ## Interface
@@ -54,19 +87,48 @@ TODO: run performance sketch on hardware.
 
 ### Constructor
 
-- **logic()** 
-- **void setTable(uint32_t table)**
-- **uint32_t getTable()**
+- **logic()** Constructor
+- **void setTable(uint32_t table)** set the table to use. 
+Note this table can be changed runtime to another value.
+- **uint32_t getTable()** return the set table.
 
-
-TODO explain table 
 
 ### Eval
+
+The eval(...) functions do a lookup in the truth table and if the combination equals 1, it returns true.
+
+Note: the parameters must always be evaluated in the same order.
 
 - **bool eval(bool a, bool b)**
 - **bool eval(bool a, bool b, bool c)**
 - **bool eval(bool a, bool b, bool c, bool d)**
 - **bool eval(bool a, bool b, bool c, bool d, bool e)**
+
+
+### Neval
+
+neval = numeric eval.
+
+The neval(...) functions do a lookup in truth table and if the combination equals 1, 
+it returns its numeric value, and **0xFFFF** otherwise. 
+This makes it useful if you need to handle different cases with the same N booleans expressions.
+
+Note: the parameters must always be evaluated in the same order.
+
+- **uint16_t neval(bool a, bool b)** Can return {0,1,2,3, 0xFFFF}
+- **uint16_t neval(bool a, bool b, bool c)** Can return {0,1,2,3...7, 0xFFFF}
+- **uint16_t neval(bool a, bool b, bool c, bool d)** Can return { 0,1,2,3, ... 15, 0xFFFF}
+- **uint16_t neval(bool a, bool b, bool c, bool d, bool e)** Can return { 0,1,2,3, ... 3, 0xFFFF1} 
+
+
+### Index
+
+Helper function made public.
+
+- **uint16_t index(bool a, bool b)** Can return {0,1,2,3}
+- **uint16_t index(bool a, bool b, bool c)** Can return {0,1,2,3...7}
+- **uint16_t index(bool a, bool b, bool c, bool d)** Can return { 0,1,2,3, ... 15}
+- **uint16_t index(bool a, bool b, bool c, bool d, bool e)** Can return { 0,1,2,3, ... 31} 
 
 
 ## Future
@@ -79,14 +141,13 @@ TODO explain table
 #### Should
 
 - optimize possible?
-  - from the number?
-  - short circuit eval
 
 #### Could
 
+- runtime modify truth-table per "bit". e.g. setTT(int idx, bool val)
 - investigate array of booleans + array of bits for the answers?
 - keep last value?
-- true-count() = how many of the params are TRUE.
+- true-count() = how many of the parameters are TRUE.
   - e.g. to test if at least N conditions are met
 
 #### Wont

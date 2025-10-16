@@ -9,7 +9,8 @@ setTable	KEYWORD2
 getTable	KEYWORD2
 
 eval	KEYWORD2
-
+neval	KEYWORD2
+index	KEYWORD2
 
 # Constants (LITERAL1)
 LOGIC_LIB_VERSION	LITERAL1

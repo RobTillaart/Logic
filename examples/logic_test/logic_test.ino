@@ -7,7 +7,6 @@
 
 #include "logic.h"
 
-
 logic LGC;
 
 
@@ -97,4 +96,3 @@ void loop()
 
 
 //  -- END OF FILE --
-

@@ -8,42 +8,6 @@
 //     URL: https://github.com/RobTillaart/logic
 //
 
-/*
-NOTES
-
-variable of type logic could have
-- operators NOT AND NAND OR NOR XOR
-- constants true false (from bool)
-- assign a == b
-- equal
-- implement PRINT
-
-logic a(true);
-logic b(true);
-println(a AND b);
-
-
-
-Functie  logic(b1, b2, 0b1001)
-
-3e getal geeft waarheids tabel
-
-Logic.setTable(bit mask)
-C = Logic(a, b)
-
-2 4
-3 8
-4 16
-5 32
-6 64 - not supported directly
-Maar bv array?
-
-Kan ik short evaluatie doen?
-
-#defines AND  0x00000001
-
-*/
-
 
 #include "Arduino.h"
 
@@ -64,48 +28,98 @@ public:
     return _table;
   }
 
+
+  ////////////////////////////////////////////////////
+  
   bool eval(bool a, bool b)
   {
-    uint32_t mask = 0x08;
-    if (a) mask >>= 2;
-    if (b) mask >>= 1;
-    return (_table & mask);
+    return (_table & (0x08 >> index(a, b)));
   }
 
   bool eval(bool a, bool b, bool c)
   {
-    uint32_t mask = 0x80;
-    if (a) mask >>= 4;
-    if (b) mask >>= 2;
-    if (c) mask >>= 1;
-    return (_table & mask);
+    return (_table & (0x80 >> index(a, b, c)));
   }
-
+  
   bool eval(bool a, bool b, bool c, bool d)
   {
-    uint32_t mask = 0x8000;
-    if (a) mask >>= 8;
-    if (b) mask >>= 4;
-    if (c) mask >>= 2;
-    if (d) mask >>= 1;
-    return (_table & mask);
+    return (_table & (0x8000 >> index(a, b, c, d)));
   }
 
   bool eval(bool a, bool b, bool c, bool d, bool e)
   {
-    uint32_t mask = 0x80000000;
-    if (a) mask >>= 16;
-    if (b) mask >>= 8;
-    if (c) mask >>= 4;
-    if (d) mask >>= 2;
-    if (e) mask >>= 1;
-    return (_table & mask);
+    return (_table & (0x80000000 >> index(a, b, c, d, e)));
+  }
+
+
+  ////////////////////////////////////////////////////
+  
+  uint16_t neval(bool a, bool b)
+  {
+    return eval(a,b) ? _idx : 0xFFFF;
+  }
+  
+  uint16_t neval(bool a, bool b, bool c)
+  {
+    return eval(a,b,c) ? _idx : 0xFFFF;
+  }
+  
+  uint16_t neval(bool a, bool b, bool c, bool d)
+  {
+    return eval(a,b,c,d) ? _idx : 0xFFFF;
+  }
+  
+  uint16_t neval(bool a, bool b, bool c, bool d, bool e)
+  {
+    return eval(a,b,c,d,e) ? _idx : 0xFFFF;
+  }
+
+
+  ////////////////////////////////////////////////////
+
+  uint16_t index(bool a, bool b)
+  {
+    uint16_t _idx = 0;
+    if (a) _idx += 2;
+    if (b) _idx += 1;
+    return _idx;
+  }
+
+  uint16_t index(bool a, bool b, bool c)
+  {
+    uint16_t _idx = 0;
+    if (a) _idx += 4;
+    if (b) _idx += 2;
+    if (c) _idx += 1;
+    return _idx;
+  }
+
+  uint16_t index(bool a, bool b, bool c, bool d)
+  {
+    uint16_t _idx = 0;
+    if (a) _idx += 8;
+    if (b) _idx += 4;
+    if (c) _idx += 2;
+    if (d) _idx += 1;
+    return _idx;
+  }
+
+  uint16_t index(bool a, bool b, bool c, bool d, bool e)
+  {
+    uint16_t _idx = 0;
+    if (a) _idx += 16;
+    if (b) _idx += 8;
+    if (c) _idx += 4;
+    if (d) _idx += 2;
+    if (e) _idx += 1;
+    return _idx;
   }
 
 private:
   uint32_t _table = 0;
-  bool     _lastValue = false;
+  uint16_t _idx = 0;
 };
+
 
 //  -- END OF FILE --
 
