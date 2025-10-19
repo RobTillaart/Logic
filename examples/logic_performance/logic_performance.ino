@@ -32,16 +32,17 @@ void setup()
 
   Serial.print("SETTABLE:\t");
   Serial.println(stop - start);
+  Serial.println();
   delay(10);
 
-  bool a = random(2);
-  bool b = random(2);
-  bool c = random(2);
-  bool d = random(2);
-  bool e = random(2);
+  volatile bool a = random(2);
+  volatile bool b = random(2);
+  volatile bool c = random(2);
+  volatile bool d = random(2);
+  volatile bool e = random(2);
 
-  //  EVAL 
-  
+  //  EVAL
+
   start = micros();
   t = LGC.eval(a, b);
   stop = micros();
@@ -68,6 +69,7 @@ void setup()
   stop = micros();
   Serial.print("EVAL(a,b,c,d,e):\t");
   Serial.println(stop - start);
+  Serial.println();
   delay(10);
 
   //  NEVAL
@@ -97,6 +99,7 @@ void setup()
   stop = micros();
   Serial.print("NEVAL(a,b,c,d,e):\t");
   Serial.println(stop - start);
+  Serial.println();
   delay(10);
 
   Serial.println("\ndone...");

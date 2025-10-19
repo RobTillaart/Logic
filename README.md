@@ -74,9 +74,9 @@ The timing does not include the evaluation of a, b et c themselves.
 |  eval(4)   |      12    |
 |  eval(5)   |      24    |
 |  neval(2)  |       8    | 
-|  neval(3)  |       4    |
-|  neval(4)  |       4    |
-|  neval(5)  |       4    |
+|  neval(3)  |      12    |
+|  neval(4)  |      12    |
+|  neval(5)  |      20    |
 
 
 ## Interface
@@ -87,7 +87,7 @@ The timing does not include the evaluation of a, b et c themselves.
 
 ### Constructor
 
-- **logic()** Constructor
+- **logic()** Constructor, sets default truth table to all false.
 - **void setTable(uint32_t table)** set the table to use. 
 Note this table can be changed runtime to another value.
 - **uint32_t getTable()** return the set table.
@@ -95,7 +95,8 @@ Note this table can be changed runtime to another value.
 
 ### Eval
 
-The eval(...) functions do a lookup in the truth table and if the combination equals 1, it returns true.
+The eval(...) functions do a lookup in the configured truth table and 
+if the combination equals 1, it returns true.
 
 Note: the parameters must always be evaluated in the same order.
 
@@ -118,7 +119,7 @@ Note: the parameters must always be evaluated in the same order.
 - **uint16_t neval(bool a, bool b)** Can return {0,1,2,3, 0xFFFF}
 - **uint16_t neval(bool a, bool b, bool c)** Can return {0,1,2,3...7, 0xFFFF}
 - **uint16_t neval(bool a, bool b, bool c, bool d)** Can return { 0,1,2,3, ... 15, 0xFFFF}
-- **uint16_t neval(bool a, bool b, bool c, bool d, bool e)** Can return { 0,1,2,3, ... 3, 0xFFFF1} 
+- **uint16_t neval(bool a, bool b, bool c, bool d, bool e)** Can return { 0,1,2,3, ... 31, 0xFFFF} 
 
 
 ### Index
@@ -136,23 +137,30 @@ Helper function made public.
 #### Must
 
 - improve documentation
-- test performance
 
 #### Should
 
 - optimize possible?
+  - code size => one function with defaults = slower.
+- investigate how to support more than five bool expressions.
+  - split in 2 LOGIC parts to handle 10? does that work?
+  - array of booleans + array of bits for the answers?
+  - how many bool expressions max? 8? 10? 16?
+  - 4 bytes support 5 expressions. 8 bytes will support 6... 32 bytes support 8. grows exponential.
+  - or another strategy, sparse true list, uses uint16_t per true, scales linear.
+  - ??
+
 
 #### Could
 
-- runtime modify truth-table per "bit". e.g. setTT(int idx, bool val)
-- investigate array of booleans + array of bits for the answers?
+- runtime modify truth-table per "bit". e.g. setTT(int index, bool value)
 - keep last value?
 - true-count() = how many of the parameters are TRUE.
   - e.g. to test if at least N conditions are met
 
 #### Wont
 
-- **bool eval(bool a)** too simple.
+- **bool eval(bool a)** too simple? :)
 - print interface? (overkill)
 
 ## Support

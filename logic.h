@@ -17,7 +17,12 @@
 class logic
 {
 public:
-  logic() {};
+  logic() 
+  {
+    _table = 0;
+    _idx = 0;
+  }
+
   void setTable(uint32_t table)
   {
     _table = table;
