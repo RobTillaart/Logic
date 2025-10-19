@@ -23,36 +23,41 @@ This library is to evaluate larger or more complex logic conditions in a simple 
 The idea is as follows, if you have a slightly complex logic, you set a truth table 
 in the logic object and evaluate the N boolean expressions against it. 
 
-IN the initial release N is 2, 3, 4 or 5, this makes the truth table an uint32_t to hold
-all 32 possible outcomes.
+In the initial release N is 2, 3, 4 or 5, this makes the truth table 32 bits long so
+an uint32_t can hold all 32 possible outcomes.
 
-A truth table is represented as a number, an example explains the best.
+A truth table is represented as a number, an example explains the working.
 
-Suppose we have 3 boolean expressions a, b and c. Furthermore we have a truth function
-**eval(a,b,c)** which returns true if exact two out of three parameters are true.
+Suppose we have three boolean expressions a, b and c. Furthermore we have a truth function
+**eval(a,b,c)** which should return true if exact two out of three parameters are true.
 
-|  NR  |  a  |  b  |  c  | eval(a,b,c) | neval(a,b,c) |
-|:----:|:---:|:---:|:---:|:-----------:|:------------:|
-|   0  |  0  |  0  |  0  |       0     |        0     |
-|   1  |  0  |  0  |  1  |       0     |        0     |
-|   2  |  0  |  1  |  0  |       0     |        0     |
+|  NR  |  a  |  b  |  c  | eval(a,b,c) | neval(a,b,c) | notes |
+|:----:|:---:|:---:|:---:|:-----------:|:------------:|:------|
+|   0  |  0  |  0  |  0  |       0     |     0xFFFF   |  0xFFFF indicates false, no NR returned.
+|   1  |  0  |  0  |  1  |       0     |     0xFFFF   |
+|   2  |  0  |  1  |  0  |       0     |     0xFFFF   |
 |   3  |  0  |  1  |  1  |       1     |        3     |
-|   4  |  1  |  0  |  0  |       0     |        0     |
+|   4  |  1  |  0  |  0  |       0     |     0xFFFF   |
 |   5  |  1  |  0  |  1  |       1     |        5     |
 |   6  |  1  |  1  |  0  |       1     |        6     |
-|   7  |  1  |  1  |  1  |       0     |        0     |
+|   7  |  1  |  1  |  1  |       0     |     0XFFFF   |
 
 The value of the truth-table becomes the bits of the **eval(a,b,c)** function column, from top to bottom.
 In the above case this value  == 0b00010110 == 0x16, so one calls **LOGIC.setTable(0b00010110)**
 or the HEX equivalent **LOGIC.setTable(0x16)** to set the truth table.
 
 - Calls to **eval(a,b,c)** will return **true** in case 3, 5 and 6, **false** otherwise.
-- Calls to **neval(a,b,c)** will return 3,5,6 in case 3, 5 and 6, and 0 otherwise.
+- Calls to **neval(a,b,c)** will return 3,5,6 in case 3, 5 and 6, and 0xFFFF otherwise.
+
+The **neval()** function can be used to differentiate between the cases that would return true.
+In code one could use this for e.g. a switch case. 
 
 
 ### Related
 
 - https://github.com/RobTillaart/logic
+- https://github.com/RobTillaart/Troolean
+
 
 ### Tested
 
@@ -64,7 +69,7 @@ Tested examples on Arduino UNO R3
 See - logic_performance.ino
 
 eval(n) => n parameters.
-The timing does not include the evaluation of a, b et c themselves.
+The timing does not include the evaluation of a, b etc. themselves.
 
 |  function  |  AVR (us)  |  Notes  |
 |:----------:|:----------:|:--------|
@@ -141,7 +146,7 @@ Helper function made public.
 #### Should
 
 - investigate how to support more than five bool expressions.
-  - split in 2 LOGIC parts to handle 10? does that work?
+  - split in 2 LOGIC parts to handle 10? does that work? (would allow short circuit eval).
   - array of booleans + array of bits for the answers?
   - how many bool expressions max? 8? 10? 16?
   - 4 bytes support 5 expressions. 8 bytes will support 6... 32 bytes support 8. grows exponential.
