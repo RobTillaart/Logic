@@ -40,7 +40,7 @@ Suppose we have three boolean expressions a, b and c. Furthermore we have a trut
 |   4  |  1  |  0  |  0  |       0     |     0xFFFF   |
 |   5  |  1  |  0  |  1  |       1     |        5     |
 |   6  |  1  |  1  |  0  |       1     |        6     |
-|   7  |  1  |  1  |  1  |       0     |     0XFFFF   |
+|   7  |  1  |  1  |  1  |       0     |     0xFFFF   |
 
 The value of the truth-table becomes the bits of the **eval(a,b,c)** function column, from top to bottom.
 In the above case this value  == 0b00010110 == 0x16, so one calls **LOGIC.setTable(0b00010110)**
