@@ -140,29 +140,31 @@ Helper function made public.
 
 #### Should
 
-- optimize possible?
-  - code size => one function with defaults = slower.
 - investigate how to support more than five bool expressions.
   - split in 2 LOGIC parts to handle 10? does that work?
   - array of booleans + array of bits for the answers?
   - how many bool expressions max? 8? 10? 16?
   - 4 bytes support 5 expressions. 8 bytes will support 6... 32 bytes support 8. grows exponential.
   - or another strategy, sparse true list, uses uint16_t per true, scales linear.
-  - ??
 
 
 #### Could
 
+- optimize possible?
+  - code size => one function with defaults = slower.
 - runtime modify truth-table per "bit". e.g. setTT(int index, bool value)
 - keep last value?
 - true-count() = how many of the parameters are TRUE.
   - e.g. to test if at least N conditions are met
+- add unit tests.
 
 #### Wont
 
 - **bool eval(bool a)** too simple? :)
 - print interface? (overkill)
-
+- define constants
+  - AND == 0x0001  OR et al depends on # parameters
+  
 ## Support
 
 If you appreciate my libraries, you can support the development and maintenance.

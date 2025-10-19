@@ -61,22 +61,22 @@ public:
   
   uint16_t neval(bool a, bool b)
   {
-    return eval(a,b) ? _idx : 0xFFFF;
+    return eval(a, b) ? _idx : 0xFFFF;
   }
   
   uint16_t neval(bool a, bool b, bool c)
   {
-    return eval(a,b,c) ? _idx : 0xFFFF;
+    return eval(a, b, c) ? _idx : 0xFFFF;
   }
   
   uint16_t neval(bool a, bool b, bool c, bool d)
   {
-    return eval(a,b,c,d) ? _idx : 0xFFFF;
+    return eval(a, b, c, d) ? _idx : 0xFFFF;
   }
   
   uint16_t neval(bool a, bool b, bool c, bool d, bool e)
   {
-    return eval(a,b,c,d,e) ? _idx : 0xFFFF;
+    return eval(a, b, c, d, e) ? _idx : 0xFFFF;
   }
 
 
@@ -121,8 +121,8 @@ public:
   }
 
 private:
-  uint32_t _table = 0;
-  uint16_t _idx = 0;
+  uint32_t _table;
+  uint16_t _idx;
 };
 
 
