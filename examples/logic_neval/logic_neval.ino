@@ -26,7 +26,8 @@ void setup()
   Serial.println();
 
   //  fill the truth table.
-  LGC.setTable(0x18);  //  ((1 << 4) | (1 << 5))
+  LGC.setTable(0x68);  //  (1 << 3 + 1 << 5 + 1 << 6)
+  Serial.println(LGC.getTable(), HEX);
 }
 
 
@@ -42,20 +43,25 @@ void loop()
   Serial.print(b);
   Serial.print(c);
   Serial.print("\t");
+  Serial.print(LGC.neval(a, b, c));
+  Serial.print("\t");
 
   switch (LGC.neval(a, b, c))
   {
-    case 4:  //  handle case 100
+    case 3:  //  handle case 110
       Serial.println("Y");
       break;
     case 5:  //  handle case 101
       Serial.println("YY");
       break;
+    case 6:  //  handle case 011
+      Serial.println("YYY");
+      break;
     default:  // handle other cases
       Serial.println("nop");
       break;
   }
-  delay(1000);
+  delay(100);
 
 }
 

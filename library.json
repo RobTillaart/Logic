@@ -16,8 +16,7 @@
     "url": "https://github.com/RobTillaart/logic.git"
   },
   "version": "0.1.1",
-  "license": "MIT",
-  "frameworks": "*",
+  "license": "MIT",  "frameworks": "*",
   "platforms": "*",
   "headers": "logic.h"
 }
