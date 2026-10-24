@@ -17,13 +17,17 @@ logic LGC;
 
 void setup()
 {
-  //  while(!Serial);  //  uncomment if needed
+  while (!Serial); //  uncomment if needed
   Serial.begin(115200);
   Serial.println();
   Serial.println(__FILE__);
   Serial.print("LOGIC_LIB_VERSION: ");
   Serial.println(LOGIC_LIB_VERSION);
   Serial.println();
+
+  LGC.setTable(-1);
+  Serial.println(LGC.getTable(), HEX);
+  delay(1000);
 
   //  fill the truth table.
   LGC.setTable(0x68);  //  (1 << 3 + 1 << 5 + 1 << 6)

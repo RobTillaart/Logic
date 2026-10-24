@@ -1,7 +1,7 @@
 //
 //    FILE: logic_test_add.ino
 //  AUTHOR: Rob Tillaart
-// PURPOSE: test basic behaviour and performance
+// PURPOSE: test behaviour add() and remove()
 //     URL: https://github.com/RobTillaart/logic
 
 
@@ -12,7 +12,7 @@ logic LGC;
 
 void setup()
 {
-  //  while(!Serial);  //  uncomment if needed
+  while(!Serial);
   Serial.begin(115200);
   Serial.println();
   Serial.println(__FILE__);

@@ -1,7 +1,7 @@
 //
 //    FILE: logic_test.ino
 //  AUTHOR: Rob Tillaart
-// PURPOSE: test basic behaviour and performance
+// PURPOSE: test basic behaviour
 //     URL: https://github.com/RobTillaart/logic
 
 
@@ -87,6 +87,7 @@ void setup()
   Serial.println(LGC.eval(1, 1, 1, 1, 0));
   Serial.println(LGC.eval(1, 1, 1, 1, 1));
 
+  //  note this table value is ~symmetric around middle
   LGC.setTable(0xFEE8E880);  //  0b1111 1110 1110 1000 1110 1000 1000 0000
   Serial.println("\nTEST 5 bit - at least 3 out of 5");
   Serial.println(LGC.eval(0, 0, 0, 0, 0));

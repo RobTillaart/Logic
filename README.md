@@ -26,16 +26,17 @@ in the logic object and evaluate the N boolean expressions against it.
 In the initial release N is 2, 3, 4 or 5, this makes the truth table 4, 8, 16 or 32 entries.
 A straightforward implementation would create an array of all possible combinations and
 a result boolean for those combinations. This would use at least 32 bytes if the booleans
-are compacted in a byte per entry.
+are combined in a byte per entry.
 
-The logic object converts 5 booleans to an integer, which is used as a bit index in
-an uint32_t. This uint32_t can hold all 32 possible outcomes as a bit pattern.
-So it uses only 4 bytes for 32 entries.
+The logic object converts up to 5 booleans to an integer, which is used as the bit 
+index in an uint32_t (representing the truth table). 
+This uint32_t can hold all 32 possible outcomes as a bit pattern.
+So the logic object uses only 4 bytes for up to 5 booleans == 32 entries.
 
 The internal truth table is represented as a number, an example explains the working.
 
 Suppose we have three boolean expressions a, b and c. Furthermore we have a truth function
-**eval(a,b,c)** which should return true if exact two out of three parameters are true.
+**eval(a,b,c)** which must return true if exact two out of three parameters are true.
 
 |  NR  |  c  |  b  |  a  | eval(a,b,c) | neval(a,b,c) | notes |
 |:----:|:---:|:---:|:---:|:-----------:|:------------:|:------|
@@ -53,8 +54,19 @@ In the above case this value  == 0b01101000 == 0x68, so one calls **LOGIC.setTab
 or the HEX equivalent **LOGIC.setTable(0x68)** to set the truth table.
 Or **LOGIC.setTable( (1 << 3) | (1 << 5) | (1 << 6) )**
 
+- Calls to **eval(a,b,c)** will return **true** in case 3, 5 and 6, **false** otherwise.
+- Calls to **neval(a,b,c)** will return 3,5,6 in case 3, 5 and 6, and 0xFFFF otherwise.
+
+The **neval()** function can be used to differentiate between the cases that would return true.
+In code one could use the return value e.g. a switch case.
+
+Note: A call to **eval()** can be read as **eval(1 + 0 + 4 + 8 + 0)**,
+every bit is the next power of 2 or zero.
+
+
 Since 0.2.0 one can also call **LOGIC.add(idx)** and/or **LOGIC.remove(idx)**
-This can be more convenient to configure the logic object.
+This can be more convenient to configure the logic object, and allows runtime 
+changes to the truth table.
 
 ```
 LOGIC.add(3);
@@ -76,14 +88,8 @@ LOGIC.remove(index(true, false, true));
 LOGIC.remove(index(false, true, true));
 ```
 
-- Calls to **eval(a,b,c)** will return **true** in case 3, 5 and 6, **false** otherwise.
-- Calls to **neval(a,b,c)** will return 3,5,6 in case 3, 5 and 6, and 0xFFFF otherwise.
+Runtime changes 
 
-The **neval()** function can be used to differentiate between the cases that would return true.
-In code one could use the return value e.g. a switch case.
-
-Note: A call to **eval()** can be read as **eval(1 + 0 + 4 + 8 + 0)**,
-every bit is the next power of 2 or zero.
 
 
 Feedback as always is welcome.
@@ -102,6 +108,7 @@ This allows to create truth table by example.
 
 ### Related
 
+- https://github.com/RobTillaart/bitHelpers
 - https://github.com/RobTillaart/logic
 - https://github.com/RobTillaart/Troolean
 
@@ -137,22 +144,45 @@ The timing in us does not include the evaluation of a, b etc. themselves.
 #include "logic.h"
 ```
 
-### Constructor, create table
+### Constructor
 
 - **logic()** Constructor, sets default truth table to all false.
-- **void setTable(uint32_t table)** set the table to use.
-Note this table can be changed runtime to another value.
-- **uint32_t getTable()** return the set table.
-- **void add(uint8_t idx)** add a single option to the table.
-- **void remove(uint8_t idx)** removes a single option from the table.
+
+
+### Create truth table
+
+- **void setTable(uint32_t table)** set the truth table to use.
+Note the truth table can be changed runtime to any another value.
+To set all entries to true one can use **setTable(-1)**.
+- **uint32_t getTable()** return the internal truth table.
+Can be used to temporary store a previous table before a number of 
+runtime changes is applied.
+- **void add(uint8_t idx)** add a single option to the truth table.
+- **void remove(uint8_t idx)** removes a single option from the truth table.
 
 **add()** and **remove()** can be used in combination with the helper
-function **index()** to fill the table as needed.
+function **index()** to fill and change the truth table **run time**.
 
 ```
 LGC.setTable(0xF5C3);
-or
++
 LGC.add(index(true, true, false, true));
++ somewhat later remove that entry.
+LGC.remove(index(true, true, false, true));
+```
+
+One can set all values to false and add the true entries.
+```
+LGC.setTable(0);  //  default
++
+LGC.remove(index(true, true, false, true));
+```
+
+One can set all values to true and remove the false entries.
+```
+LGC.setTable(-1);
++
+LGC.remove(index(true, true, false, true));
 ```
 
 
@@ -173,21 +203,21 @@ Note: the parameters **must** always be evaluated in the same order.
 
 neval = numeric eval.
 
-The **neval(...)** functions do a lookup in truth table and if the combination equals 1,
-it returns its numeric value, and **0xFFFF** otherwise.
-This makes it useful if you need to handle different cases with the same N booleans expressions.
+The **neval(...)** functions do a lookup in the truth table and if the combination equals 1,
+it returns its numeric value, or **0xFFFF** otherwise.
+This makes it useful if you need to handle different true cases with the same N booleans expressions.
 
 Note: the parameters **must** always be evaluated in the same order.
 
 - **uint16_t neval(bool a, bool b)** Can return {0,1,2,3, 0xFFFF}
-- **uint16_t neval(bool a, bool b, bool c)** Can return {0,1,2,3...7, 0xFFFF}
+- **uint16_t neval(bool a, bool b, bool c)** Can return {0,1,2,3 ... 7, 0xFFFF}
 - **uint16_t neval(bool a, bool b, bool c, bool d)** Can return { 0,1,2,3, ... 15, 0xFFFF}
 - **uint16_t neval(bool a, bool b, bool c, bool d, bool e)** Can return { 0,1,2,3, ... 31, 0xFFFF}
 
 
-### countTrue
+### CountTrue
 
-Count the parameters True, no separate False counter.
+Count the parameters True, no separate countFalse() counter.
 Convenience function.
 
 - **uint8_t countTrue(bool a, bool b)**
@@ -198,7 +228,7 @@ Convenience function.
 
 ### Index
 
-Helper function made public.
+Helper function.
 
 - **uint16_t index(bool a, bool b)** Can return {0,1,2,3}
 - **uint16_t index(bool a, bool b, bool c)** Can return {0,1,2,3...7}
@@ -231,18 +261,23 @@ Helper function made public.
 #### Could
 
 - optimize possible?
-  - code size => one function with defaults = slower.
-- add unit tests.
 - investigate how to handle "don't care's" ?
 - rename neval() to int8_t numEval() {0...N, -1}
-- create a logic6/logic7/logic8 class? (on request)
-
+- dumpTable(size?) dumps all entries e.g. as 0 0 0 => 1
+  - char_ptr dumpEntry(idx) ?
+- extend unit tests.
+- is an a,b,c == integer version possible?
+  
 #### Wont
 
+- code size => one function with defaults = slower.
+- create a logic6/logic7/logic8 class? (on request)
 - **bool eval(bool a)** too simple? :)
 - print interface? (overkill)
 - define constants
   - AND == 0x0001  OR et al depends on # parameters
+- add a table in the constructor? (one call less).
+- make **setTable(0)** default. nope, keep it explicit.
 
 ## Support
 

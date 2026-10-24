@@ -10,9 +10,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - fix #3, reverse internal table
 - add **add(index)**
 - add **remove(index)**
+- add example **logic_test_add.ino**
 - add **uint8_t countTrue(a,b,c,d,e)**
-- adjust examples to work with new internals.
+- update examples to work with new internals.
 - add output files of examples.
+- add some unit tests
 - update readme.md
 - reduce build-CI
 - minor edits
