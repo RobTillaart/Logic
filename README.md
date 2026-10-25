@@ -103,7 +103,8 @@ implicitly making the other parameters **false**.
 
 Furthermore, version 0.2.0 allows to **add(index)** and **remove(index)** which
 can be used with the index function e.g. **add(index(true, false, true))**.
-This allows to create truth table by example.
+This allows to create truth table by example, or change the truth table
+runtime by adding and removing selected cases.
 
 
 ### Related
